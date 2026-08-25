@@ -95,7 +95,20 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,
 </div></div>
 
 <script>
-const $=id=>document.getElementById(id);
+consconst SUPABASE_URL = 'https://yhioieooyvbachnwmfda.supabase.co';
+const SUPABASE_KEY = 'const SUPABASE_KEY = 'sb_publishable_KoBPNBchqxMJUnbqpppLZw_LVgLZU7P';
+
+async function supabaseRequest(path, options = {}) {
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    }
+  });
+}t $=id=>document.getElementById(id);
 const KPOST='raliqo_v3_posts', KMATCH='raliqo_v3_matches';
 let selectedDate=new Date();
 let posts=JSON.parse(localStorage.getItem(KPOST)||'null')||[];
@@ -150,7 +163,7 @@ function renderTours(){
  const arr=posts.filter(p=>p.type==='tour'||p.duration>=1440);
  $('tours').innerHTML=arr.length?arr.map(t=>`<div class="tour"><h3>✈️ ${esc(t.title)}</h3><p>${esc(t.place)}</p><p>${esc(t.notes||'')}</p><span class="tag green">${t.spots} plaza(s)</span></div>`).join(''):'<div class="meta">Sin giras.</div>';
 }
-function renderExplore(){
+function renderExpllore(){
  $('exploreList').innerHTML=posts.map(p=>`<div class="card"><div class="cardtop"><div class="avatar">${{training:'🎾',coach:'👤',player:'⚡',service:'💪',tour:'✈️'}[p.type]||'🎾'}</div><div><h3>${esc(p.title)}</h3><div class="meta">${esc(p.place)} · ${esc(p.date)} ${esc(p.start)}</div></div></div><div class="cardbottom"><div><div class="price">${p.price?esc(p.price)+' €':'A convenir'}</div><div class="meta">${p.spots||1} plaza(s)</div></div><button class="btn mbtn" data-id="${p.id}">MATCH</button></div></div>`).join('');
  document.querySelectorAll('.mbtn').forEach(b=>b.addEventListener('click',()=>doMatch(b.dataset.id)));
 }
