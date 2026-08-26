@@ -187,6 +187,7 @@ function renderAll(){renderWeek();renderHours();renderTours();renderExplore();re
 function openCreate(hour='10:00'){$('fDate').value=iso(selectedDate);$('fTime').value=hour;$('createSheet').classList.add('on')}
 function closeCreate(){$('createSheet').classList.remove('on')}
 function publish(){
+  console.log("RALIQO SUPABASE TEST");
  const rec={id:'p'+Date.now(),type:$('fType').value,title:$('fTitle').value.trim()||'Disponibilidad',place:$('fPlace').value.trim()||'Barcelona',date:$('fDate').value,start:$('fTime').value||'10:00',duration:Number($('fDuration').value),price:Number($('fPrice').value||0),spots:Number($('fSpots').value||1),status:'open',owner:'me',notes:$('fNotes').value.trim()};
  posts.unshift(rec);localStorage.setItem(KPOST,JSON.stringify(posts));closeCreate();selectedDate=new Date(rec.date+'T12:00:00');renderAll()
 }
