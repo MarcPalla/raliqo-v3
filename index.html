@@ -113,7 +113,32 @@ const KPOST='raliqo_v3_posts', KMATCH='raliqo_v3_matches';
 let selectedDate=new Date();
 let posts=JSON.parse(localStorage.getItem(KPOST)||'null')||[];
 let matches=JSON.parse(localStorage.getItem(KMATCH)||'[]');
+async function loadPostsFromSupabase(){
+  const r=await supabaseRequest('posts?select=*');
+  if(!r.ok){
+    console.error('LOAD POSTS ERROR',r.status);
+    return;
+  }
 
+  const data=await r.json();
+
+  posts=data.map(p=>({
+    id:p.id,
+    type:p.type,
+    title:p.title,
+    place:p.place,
+    date:p.date,
+    start:p.start_time,
+    duration:p.duration_min,
+    price:p.price,
+    spots:p.spots,
+    status:p.status,
+    notes:p.notes
+  }));
+
+  localStorage.setItem(KPOST,JSON.stringify(posts));
+  renderAll();
+}
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const iso=d=>new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())).toISOString().slice(0,10);
 const add=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x}
