@@ -203,8 +203,13 @@ setTimeout(async()=>{
       notes:rec.notes
     })
   });
-  if(!r.ok) console.error('SUPABASE ERROR',r.status,await r.text());
-  else console.log('SUPABASE OK');
+  if(!r.ok){
+  const err=await r.text();
+  alert('SUPABASE ERROR '+r.status+' '+err);
+}else{
+  alert('SUPABASE OK');
+}
+
 },0);
  const rec={id:'p'+Date.now(),type:$('fType').value,title:$('fTitle').value.trim()||'Disponibilidad',place:$('fPlace').value.trim()||'Barcelona',date:$('fDate').value,start:$('fTime').value||'10:00',duration:Number($('fDuration').value),price:Number($('fPrice').value||0),spots:Number($('fSpots').value||1),status:'open',owner:'me',notes:$('fNotes').value.trim()};
  posts.unshift(rec);localStorage.setItem(KPOST,JSON.stringify(posts));closeCreate();selectedDate=new Date(rec.date+'T12:00:00');renderAll()
