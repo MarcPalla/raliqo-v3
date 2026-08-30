@@ -245,7 +245,7 @@ function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remo
 document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>show(n.dataset.v)));
 $('fab').addEventListener('click',()=>openCreate());$('cancelBtn').addEventListener('click',closeCreate);$('publishBtn').addEventListener('click',publish);$('todayBtn').addEventListener('click',()=>{selectedDate=new Date();renderAll()});
 $('createSheet').addEventListener('click',e=>{if(e.target===$('createSheet'))closeCreate()});
-seedIfEmpty();renderAll();
+seedIfEmpty();renderAll();loadPostsFromSupabase();
 </script>
 </body>
 </html>
