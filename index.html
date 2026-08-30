@@ -124,7 +124,7 @@ async function loadPostsFromSupabase(){
   }
 
   const data=await r.json();
-alert(POSTS SUPABASE: '+data.length);
+alert('POSTS SUPABASE: '+data.length);
   posts=data.map(p=>({
     id:p.id,
     user_id:p.user_id,
