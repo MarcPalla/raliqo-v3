@@ -110,6 +110,9 @@ async function supabaseRequest(path, options = {}) {
   });
 } $=id=>document.getElementById(id);
 const KPOST='raliqo_v3_posts', KMATCH='raliqo_v3_matches';
+  let CURRENT_USER_ID=localStorage.getItem('raliqo_user_id');
+  if(!CURRENT_USER_ID){CURRENT_USER_ID=crypto.randomUUID();localStorage.setItem('raliqo_user_id',CURRENT_USER_ID);}
+  const ME=CURRENT_USER_ID;
 let selectedDate=new Date();
 let posts=JSON.parse(localStorage.getItem(KPOST)||'null')||[];
 let matches=JSON.parse(localStorage.getItem(KMATCH)||'[]');
@@ -217,6 +220,7 @@ setTimeout(async()=>{
     method:'POST',
     headers:{Prefer:'return=minimal'},
     body:JSON.stringify({
+      user_id:CURRENT_USER_ID,
       type:rec.type,
       title:rec.title,
       place:rec.place,
