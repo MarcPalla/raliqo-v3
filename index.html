@@ -127,6 +127,7 @@ async function loadPostsFromSupabase(){
 
   posts=data.map(p=>({
     id:p.id,
+    user_id:p.user_id,
     type:p.type,
     title:p.title,
     place:p.place,
