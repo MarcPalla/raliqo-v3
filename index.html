@@ -119,7 +119,7 @@ let matches=JSON.parse(localStorage.getItem(KMATCH)||'[]');
 async function loadPostsFromSupabase(){
   const r=await supabaseRequest('posts?select=*');
   if(!r.ok){
-    console.error('LOAD POSTS ERROR',r.status);
+    alert('LOAD POSTS ERROR: '+r.status);
     return;
   }
 
