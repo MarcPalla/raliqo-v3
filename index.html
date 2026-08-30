@@ -247,11 +247,13 @@ setTimeout(async()=>{
 }
 function openEvent(id){const p=posts.find(x=>x.id===id);if(!p)return;alert(`${p.title}\n${p.place}\n${p.date} · ${p.start}\n${p.price? p.price+' €':'A convenir'}\n${p.notes||''}`)}
 function doMatch(id){const p=posts.find(x=>x.id===id);if(!p)return;matches.unshift({id:'m'+Date.now(),title:p.title,status:'Pendiente'});localStorage.setItem(KMATCH,JSON.stringify(matches));renderAll();show('matches')}
+  
 function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));$(id).classList.add('on');document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('on',n.dataset.v===id))}
+loadPostsFromSupabase();
 document.querySelectorAll('.nav').forEach(n=>n.addEventListener('click',()=>show(n.dataset.v)));
 $('fab').addEventListener('click',()=>openCreate());$('cancelBtn').addEventListener('click',closeCreate);$('publishBtn').addEventListener('click',publish);$('todayBtn').addEventListener('click',()=>{selectedDate=new Date();renderAll()});
 $('createSheet').addEventListener('click',e=>{if(e.target===$('createSheet'))closeCreate()});
-seedIfEmpty();renderAll();loadPostsFromSupabase();
+seedIfEmpty()renderALL();
 </script>
 </body>
 </html>
