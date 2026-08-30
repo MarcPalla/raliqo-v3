@@ -117,6 +117,7 @@ let selectedDate=new Date();
 let posts=JSON.parse(localStorage.getItem(KPOST)||'null')||[];
 let matches=JSON.parse(localStorage.getItem(KMATCH)||'[]');
 async function loadPostsFromSupabase(){
+  alert('LOAD START');
   const r=await supabaseRequest('posts?select=*');
   if(!r.ok){
     alert('LOAD POSTS ERROR: '+r.status);
