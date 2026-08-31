@@ -48,8 +48,347 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,
 .field label{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}.field input,.field select,.field textarea{width:100%;border:0;outline:0;background:transparent;color:var(--ink)}
 .primary,.secondary{width:100%;border-radius:15px;padding:14px;font-weight:800;margin-top:9px}.primary{border:0;background:var(--g);color:#fff}.secondary{border:1px solid var(--line);background:#fff}
 .profile{text-align:center;padding:18px 4px}.bigavatar{width:92px;height:92px;border-radius:28px;background:#dfe8dd;display:grid;place-items:center;font-size:39px;margin:auto}.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.stat{text-align:left}.stat strong{font-size:22px}
+  
 </style>
 </head>
+  <style>
+#authScreen{
+  position:fixed;inset:0;z-index:9999;background:#f8faf7;
+  display:flex;align-items:center;justify-content:center;padding:22px
+}
+.authbox{
+  width:min(420px,100%);background:white;border:1px solid #e3e8e0;
+  border-radius:28px;padding:24px
+}
+.authlogo{font-size:30px;font-weight:900;margin-bottom:6px}
+.authlogo span{color:#2f8a3a}
+.authbox h2{margin:15px 0 5px;font-size:26px}
+.authbox p{color:#747b74;margin:0 0 18px}
+.authfield{
+  width:100%;border:1px solid #e3e8e0;background:#fafbf9;
+  padding:14px;border-radius:14px;margin-bottom:10px
+}
+.authbtn{
+  width:100%;border:0;border-radius:14px;padding:14px;
+  background:#2f8a3a;color:white;font-weight:800;margin-top:5px
+}
+.authsecondary{
+  width:100%;border:0;background:transparent;padding:13px;
+  font-weight:700;color:#2f8a3a
+}
+#signupFields{display:none}
+#authMsg{font-size:13px;margin-top:10px;color:#b42318}
+.logoutBtn{
+  border:1px solid #e3e8e0;background:white;border-radius:14px;
+  padding:12px 18px;margin-top:16px;font-weight:700
+}
+</style>
+
+<div id="authScreen">
+  <div class="authbox">
+    <div class="authlogo">RAL<span>IQO</span></div>
+
+    <h2 id="authTitle">Iniciar sesión</h2>
+    <p id="authSubtitle">Entra en tu grupo privado.</p>
+
+    <div id="signupFields">
+      <input id="authName" class="authfield" placeholder="Nombre">
+      
+      <select id="authRole" class="authfield">
+        <option value="player">🎾 Player</option>
+        <option value="coach">👤 Coach</option>
+        <option value="service">💪 Profesional / Servicio</option>
+      </select>
+
+      <input id="authGroup" class="authfield" placeholder="Código de grupo">
+    </div>
+
+    <input id="authEmail" class="authfield" type="email" placeholder="Email">
+    <input id="authPassword" class="authfield" type="password" placeholder="Contraseña">
+
+    <button id="authMainBtn" class="authbtn">Entrar</button>
+    <button id="authSwitchBtn" class="authsecondary">Crear una cuenta</button>
+
+    <div id="authMsg"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+let signupMode=false;
+
+const authScreen=document.getElementById('authScreen');
+const authTitle=document.getElementById('authTitle');
+const authSubtitle=document.getElementById('authSubtitle');
+const signupFields=document.getElementById('signupFields');
+const authMainBtn=document.getElementById('authMainBtn');
+const authSwitchBtn=document.getElementById('authSwitchBtn');
+const authMsg=document.getElementById('authMsg');
+
+function authMessage(txt){
+  authMsg.textContent=txt||'';
+}
+
+authSwitchBtn.onclick=()=>{
+  signupMode=!signupMode;
+
+  if(signupMode){
+    authTitle.textContent='Crear cuenta';
+    authSubtitle.textContent='Únete a tu grupo de RALIQO.';
+    signupFields.style.display='block';
+    authMainBtn.textContent='Crear cuenta';
+    authSwitchBtn.textContent='Ya tengo cuenta';
+  }else{
+    authTitle.textContent='Iniciar sesión';
+    authSubtitle.textContent='Entra en tu grupo privado.';
+    signupFields.style.display='none';
+    authMainBtn.textContent='Entrar';
+    authSwitchBtn.textContent='Crear una cuenta';
+  }
+
+  authMessage('');
+};
+
+async function login(email,password){
+
+  const r=await fetch(
+    SUPABASE_URL+'/auth/v1/token?grant_type=password',
+    {
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        email:email,
+        password:password
+      })
+    }
+  );
+
+  const data=await r.json();
+
+  if(!r.ok){
+    throw new Error(data.error_description||data.msg||'No se pudo iniciar sesión');
+  }
+
+  return data;
+}
+
+async function createProfile(user,token,name,role,group){
+
+  const r=await fetch(
+    SUPABASE_URL+'/rest/v1/profiles',
+    {
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Authorization':'Bearer '+token,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates,return=minimal'
+      },
+      body:JSON.stringify({
+        id:user.id,
+        email:user.email,
+        display_name:name,
+        role:role,
+        group_code:group
+      })
+    }
+  );
+
+  if(!r.ok){
+    console.log('Profile error',await r.text());
+  }
+}
+
+function saveSession(data){
+
+  localStorage.setItem('raliqo_access_token',data.access_token);
+  localStorage.setItem('raliqo_refresh_token',data.refresh_token||'');
+
+  if(data.user && data.user.id){
+    localStorage.setItem('raliqo_user_id',data.user.id);
+  }
+}
+
+async function signup(){
+
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPassword').value;
+  const name=document.getElementById('authName').value.trim();
+  const role=document.getElementById('authRole').value;
+  const group=document.getElementById('authGroup').value.trim();
+
+  if(!name){
+    throw new Error('Escribe tu nombre');
+  }
+
+  if(!email){
+    throw new Error('Escribe tu email');
+  }
+
+  if(password.length<6){
+    throw new Error('La contraseña necesita mínimo 6 caracteres');
+  }
+
+  const r=await fetch(
+    SUPABASE_URL+'/auth/v1/signup',
+    {
+      method:'POST',
+      headers:{
+        'apikey':SUPABASE_KEY,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        email:email,
+        password:password
+      })
+    }
+  );
+
+  let data=await r.json();
+
+  if(!r.ok){
+    throw new Error(data.msg||data.error_description||'No se pudo crear la cuenta');
+  }
+
+  if(!data.access_token){
+    data=await login(email,password);
+  }
+
+  saveSession(data);
+
+  await createProfile(
+    data.user,
+    data.access_token,
+    name,
+    role,
+    group
+  );
+
+  location.reload();
+}
+
+async function signin(){
+
+  const email=document.getElementById('authEmail').value.trim();
+  const password=document.getElementById('authPassword').value;
+
+  if(!email||!password){
+    throw new Error('Escribe email y contraseña');
+  }
+
+  const data=await login(email,password);
+
+  saveSession(data);
+
+  location.reload();
+}
+
+authMainBtn.onclick=async()=>{
+
+  authMessage('');
+
+  authMainBtn.disabled=true;
+  authMainBtn.textContent=signupMode?'Creando...':'Entrando...';
+
+  try{
+
+    if(signupMode){
+      await signup();
+    }else{
+      await signin();
+    }
+
+  }catch(e){
+
+    authMessage(e.message);
+
+    authMainBtn.disabled=false;
+    authMainBtn.textContent=signupMode?'Crear cuenta':'Entrar';
+  }
+};
+
+async function checkSession(){
+
+  const token=localStorage.getItem('raliqo_access_token');
+
+  if(!token){
+    authScreen.style.display='flex';
+    return;
+  }
+
+  try{
+
+    const r=await fetch(
+      SUPABASE_URL+'/auth/v1/user',
+      {
+        headers:{
+          'apikey':SUPABASE_KEY,
+          'Authorization':'Bearer '+token
+        }
+      }
+    );
+
+    if(!r.ok){
+      localStorage.removeItem('raliqo_access_token');
+      localStorage.removeItem('raliqo_refresh_token');
+      authScreen.style.display='flex';
+      return;
+    }
+
+    const user=await r.json();
+
+    const oldId=localStorage.getItem('raliqo_user_id');
+
+    if(oldId!==user.id){
+      localStorage.setItem('raliqo_user_id',user.id);
+      location.reload();
+      return;
+    }
+
+    authScreen.style.display='none';
+
+    addLogout();
+
+  }catch(e){
+
+    authScreen.style.display='flex';
+  }
+}
+
+function addLogout(){
+
+  const profile=document.querySelector('#me .profile');
+
+  if(!profile || document.getElementById('logoutBtn')){
+    return;
+  }
+
+  const btn=document.createElement('button');
+
+  btn.id='logoutBtn';
+  btn.className='logoutBtn';
+  btn.textContent='Cerrar sesión';
+
+  btn.onclick=()=>{
+
+    localStorage.removeItem('raliqo_access_token');
+    localStorage.removeItem('raliqo_refresh_token');
+    localStorage.removeItem('raliqo_user_id');
+
+    location.reload();
+  };
+
+  profile.appendChild(btn);
+}
+
+checkSession();
+
+})();
+</script>
 <body>
 <div class="app">
 <header><div class="brand"><div class="logo">RAL<span>IQO</span></div><span class="beta">V3 PRIVATE</span></div></header>
