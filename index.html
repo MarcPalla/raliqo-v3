@@ -341,13 +341,7 @@ async function checkSession(){
 
     const user=await r.json();
 
-    const oldId=localStorage.getItem('raliqo_user_id');
-
-    if(oldId!==user.id){
-      localStorage.setItem('raliqo_user_id',user.id);
-      location.reload();
-      return;
-    }
+    const CURRENT_USER_ID = localStorage.getItem('raliqo_user_id');
 
     authScreen.style.display='none';
 
