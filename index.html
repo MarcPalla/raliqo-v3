@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f8faf7">
-<title>RALIQO V4 MVP</title>
+<title>RALIQO V5</title>
 
 <style>
 :root{
@@ -217,6 +217,8 @@ nav{
 .worldline{display:flex;gap:8px;align-items:center;margin:2px 0 14px;color:var(--muted);font-size:12px}
 .worlddot{width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 0 4px var(--soft)}
 
+#calendarTabs{overflow:auto}#calendarTabs button{min-width:58px}.calendarAlt{margin-top:4px}.monthCard{background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden}.monthHead{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px;font-weight:900;text-transform:capitalize}.monthNav{border:0;background:#f1f4ef;border-radius:12px;width:36px;height:36px;font-weight:900}.monthGrid{display:grid;grid-template-columns:repeat(7,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}.monthDow{font-size:10px;color:var(--muted);text-align:center;padding:7px 0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafbf9}.monthCell{min-height:68px;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff;text-align:left;padding:6px;color:var(--ink)}.monthCell.muted{background:#fafbf9;color:#a4aaa4}.monthCell.today .dayNum{background:var(--g);color:#fff}.dayNum{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:800}.dayDots{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}.dayDot{width:5px;height:5px;border-radius:50%;background:var(--g)}.dayMini{font-size:8px;line-height:1.15;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}.yearTitle{font-size:24px;font-weight:900;margin:4px 2px 12px;display:flex;justify-content:space-between;align-items:center}.yearGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.miniMonth{background:#fff;border:1px solid var(--line);border-radius:18px;padding:10px}.miniMonth h4{margin:0 0 8px;text-transform:capitalize;font-size:13px}.miniGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}.miniDay{border:0;background:transparent;font-size:8px;text-align:center;padding:3px 0;border-radius:6px;color:#7d847d}.miniDay.has{background:var(--soft);color:var(--g);font-weight:900}.miniDay.today{background:var(--g);color:#fff}.listDay{margin-bottom:14px}.listDayTitle{font-size:13px;font-weight:900;text-transform:capitalize;margin:0 2px 6px}.matchSectionTitle{font-size:13px;font-weight:900;margin:14px 2px 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}.matchSuggestion{border-left:4px solid var(--g)}@media(max-width:370px){.yearGrid{grid-template-columns:1fr}.monthCell{min-height:58px}.seg button{padding:9px 6px}}
+
 </style>
 </head>
 
@@ -255,7 +257,7 @@ nav{
 <header>
   <div class="brand">
     <div class="logo">RAL<span>IQO</span></div>
-    <span class="beta">V4 MVP</span>
+    <span class="beta">V5</span>
   </div>
 </header>
 
@@ -268,31 +270,37 @@ nav{
   </div>
 
   <div class="toolbar">
-    <div class="seg">
-      <button class="on">Semana</button>
-      <button disabled>Mes</button>
-      <button disabled>Lista</button>
+    <div class="seg" id="calendarTabs">
+      <button class="on" data-cal="week">Semana</button>
+      <button data-cal="month">Mes</button>
+      <button data-cal="year">Año</button>
+      <button data-cal="list">Lista</button>
     </div>
     <button id="todayBtn" class="today">Hoy</button>
   </div>
 
-  <div id="weekstrip" class="weekstrip"></div>
+  <div id="weekView">
+    <div id="weekstrip" class="weekstrip"></div>
 
-  <div id="smartMatch" class="matchbar" style="display:none">
-    <div>
-      <strong>⚡ Hay un match posible</strong><br>
-      <span id="smartText"></span>
+    <div id="smartMatch" class="matchbar" style="display:none">
+      <div>
+        <strong>⚡ Hay un match posible</strong><br>
+        <span id="smartText"></span>
+      </div>
+      <button id="smartBtn">Ver</button>
     </div>
-    <button id="smartBtn">Ver</button>
-  </div>
 
-  <div class="cal">
-    <div id="caltitle" class="caltitle"></div>
-    <div class="timeline">
-      <div id="hours" class="hours"></div>
-      <div id="grid" class="grid"></div>
+    <div class="cal">
+      <div id="caltitle" class="caltitle"></div>
+      <div class="timeline">
+        <div id="hours" class="hours"></div>
+        <div id="grid" class="grid"></div>
+      </div>
     </div>
   </div>
+  <div id="monthView" class="calendarAlt" style="display:none"></div>
+  <div id="yearView" class="calendarAlt" style="display:none"></div>
+  <div id="listView" class="calendarAlt" style="display:none"></div>
 
   <div class="legend">
     <span class="tag green">🟢 Disponible</span>
@@ -775,6 +783,7 @@ let CURRENT_USER_ID=safeGet(KUSER,'');
 const ME=()=>CURRENT_USER_ID;
 
 let selectedDate=new Date();
+let calendarMode='week';
 let posts=[];
 let matches=[];
 
@@ -1128,27 +1137,13 @@ function renderExplore(){
 }
 
 function renderMatches(){
-  $('matchList').innerHTML=
-  matches.length
-  ? matches.map(m=>`
-    <div class="card">
-      <div class="cardtop">
-        <div class="avatar">🤝</div>
-        <div>
-          <h3>${esc(m.title)}</h3>
-          <div class="meta">${esc(m.place||'')} ${m.amount?`· ${esc(m.amount)} ${esc(m.currency||'EUR')}`:''}</div>
-        </div>
-      </div>
-      <div class="spotmeta">
-        <span class="tag green">${esc(m.status||'Pendiente')}</span>
-        <span class="badge">${esc(m.flowLabel||'Solicitud')}</span>
-      </div>
-    </div>`
-  ).join('')
-  : '<div class="emptyState">Aún no tienes matches.<br>Explora Spots y conecta con alguien.</div>';
-
-  $('pc').textContent=posts.filter(p=>p.owner==='me').length;
-  $('mc').textContent=matches.length;
+  const host=$('matchList'); if(!host) return;
+  const confirmed=matches.map(m=>`<div class="card"><div class="cardtop"><div class="avatar">🤝</div><div><h3>${esc(m.title)}</h3><div class="meta">${esc(m.place||'')} ${m.amount?`· ${esc(m.amount)} ${esc(m.currency||'EUR')}`:''}</div></div></div><div class="spotmeta"><span class="tag green">${esc(m.status||'Pendiente')}</span><span class="badge">${esc(m.flowLabel||'Solicitud')}</span></div></div>`).join('');
+  const suggestions=posts.filter(p=>p&&p.owner!=='me'&&p.status==='open').slice(0,8).map(p=>`<div class="card matchSuggestion"><div class="cardtop"><div class="avatar">${typeIcon(p.type)}</div><div style="min-width:0"><h3>${esc(p.title)}</h3><div class="meta">${esc(p.place)} · ${esc(p.date)} ${esc(p.start)}</div></div></div><div class="spotmeta"><span class="badge">${esc(typeLabel(p.type))}</span><span class="badge global">${esc(formatDuration(p.duration))}</span></div><div class="cardactions"><button class="btn light detailbtn" data-id="${esc(p.id)}">Ver</button><button class="btn mbtn" data-id="${esc(p.id)}">${p.flow==='instant'?'RESERVAR':p.flow==='contact'?'CONECTAR':'MATCH'}</button></div></div>`).join('');
+  host.innerHTML=(confirmed?`<div class="matchSectionTitle">Tus matches</div>${confirmed}`:'')+(suggestions?`<div class="matchSectionTitle">Matches posibles</div>${suggestions}`:'')||'<div class="emptyState">Aún no hay matches posibles.<br>Cuando aparezcan Spots compatibles los verás aquí.</div>';
+  host.querySelectorAll('.mbtn').forEach(b=>b.addEventListener('click',()=>doMatch(b.dataset.id)));
+  host.querySelectorAll('.detailbtn').forEach(b=>b.addEventListener('click',()=>openEvent(b.dataset.id)));
+  $('pc').textContent=posts.filter(p=>p.owner==='me').length;$('mc').textContent=matches.length;
 }
 
 function smartMatch(){
@@ -1191,14 +1186,13 @@ function smartMatch(){
   }
 }
 
-function renderAll(){
-  renderWeek();
-  renderHours();
-  renderTours();
-  renderExplore();
-  renderMatches();
-  smartMatch();
-}
+function setCalendarMode(mode){calendarMode=mode;document.querySelectorAll('#calendarTabs [data-cal]').forEach(b=>b.classList.toggle('on',b.dataset.cal===mode));renderCalendarMode()}
+function renderCalendarMode(){const w=$('weekView'),m=$('monthView'),y=$('yearView'),l=$('listView');if(!w||!m||!y||!l)return;w.style.display=calendarMode==='week'?'block':'none';m.style.display=calendarMode==='month'?'block':'none';y.style.display=calendarMode==='year'?'block':'none';l.style.display=calendarMode==='list'?'block':'none';if(calendarMode==='month')renderMonth();if(calendarMode==='year')renderYear();if(calendarMode==='list')renderAgendaList()}
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}function mondayIndex(d){return(d+6)%7}
+function renderMonth(){const host=$('monthView');if(!host)return;const y=selectedDate.getFullYear(),mo=selectedDate.getMonth(),first=new Date(y,mo,1,12),offset=mondayIndex(first.getDay()),total=daysInMonth(y,mo),names=['L','M','X','J','V','S','D'];let cells=names.map(n=>`<div class="monthDow">${n}</div>`).join('');for(let i=0;i<42;i++){const d=new Date(y,mo,i-offset+1,12),ds=iso(d),muted=d.getMonth()!==mo,dp=posts.filter(p=>p&&p.date===ds),today=ds===iso(new Date());cells+=`<button class="monthCell ${muted?'muted':''} ${today?'today':''}" data-date="${ds}"><span class="dayNum">${d.getDate()}</span><span class="dayDots">${dp.slice(0,4).map(()=>'<i class="dayDot"></i>').join('')}</span>${dp[0]?`<div class="dayMini">${esc(dp[0].title)}</div>`:''}</button>`}host.innerHTML=`<div class="monthCard"><div class="monthHead"><button class="monthNav" data-shift="-1">‹</button><span>${selectedDate.toLocaleDateString('es-ES',{month:'long',year:'numeric'})}</span><button class="monthNav" data-shift="1">›</button></div><div class="monthGrid">${cells}</div></div>`;host.querySelectorAll('[data-shift]').forEach(b=>b.onclick=()=>{selectedDate=new Date(y,mo+Number(b.dataset.shift),1,12);renderAll()});host.querySelectorAll('.monthCell').forEach(b=>b.onclick=()=>{selectedDate=new Date(b.dataset.date+'T12:00:00');setCalendarMode('week');renderAll()})}
+function renderYear(){const host=$('yearView');if(!host)return;const y=selectedDate.getFullYear();let months='';for(let mo=0;mo<12;mo++){const off=mondayIndex(new Date(y,mo,1,12).getDay()),total=daysInMonth(y,mo);let days='';for(let i=0;i<42;i++){const n=i-off+1;if(n<1||n>total){days+='<span class="miniDay"></span>';continue}const d=new Date(y,mo,n,12),ds=iso(d),has=posts.some(p=>p&&p.date===ds),today=ds===iso(new Date());days+=`<button class="miniDay ${has?'has':''} ${today?'today':''}" data-date="${ds}">${n}</button>`}months+=`<div class="miniMonth"><h4>${new Date(y,mo,1).toLocaleDateString('es-ES',{month:'long'})}</h4><div class="miniGrid">${days}</div></div>`}host.innerHTML=`<div class="yearTitle"><button class="monthNav" data-year="-1">‹</button><span>${y}</span><button class="monthNav" data-year="1">›</button></div><div class="yearGrid">${months}</div>`;host.querySelectorAll('[data-year]').forEach(b=>b.onclick=()=>{selectedDate=new Date(y+Number(b.dataset.year),selectedDate.getMonth(),1,12);renderAll()});host.querySelectorAll('.miniDay[data-date]').forEach(b=>b.onclick=()=>{selectedDate=new Date(b.dataset.date+'T12:00:00');setCalendarMode('month');renderAll()})}
+function renderAgendaList(){const host=$('listView');if(!host)return;const y=selectedDate.getFullYear(),mo=selectedDate.getMonth(),arr=posts.filter(p=>p&&p.date&&new Date(p.date+'T12:00:00').getFullYear()===y&&new Date(p.date+'T12:00:00').getMonth()===mo).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));if(!arr.length){host.innerHTML='<div class="emptyState">No hay eventos este mes.</div>';return}const g={};arr.forEach(p=>(g[p.date]??=[]).push(p));host.innerHTML=Object.entries(g).map(([date,items])=>`<div class="listDay"><div class="listDayTitle">${fmt(date)}</div>${items.map(p=>`<div class="card" style="margin-bottom:7px"><div class="cardtop"><div class="avatar">${typeIcon(p.type)}</div><div><h3>${esc(p.title)}</h3><div class="meta">${esc(p.start)} · ${esc(p.place)}</div></div></div></div>`).join('')}</div>`).join('')}
+function renderAll(){renderWeek();renderHours();renderTours();renderExplore();renderMatches();smartMatch();renderCalendarMode()}
 
 function openCreate(hour='10:00'){
   $('fDate').value=iso(selectedDate);
@@ -1434,6 +1428,8 @@ function init(){
     'click',
     publish
   );
+
+  document.querySelectorAll('#calendarTabs [data-cal]').forEach(b=>b.addEventListener('click',()=>setCalendarMode(b.dataset.cal)));
 
   $('todayBtn').addEventListener(
     'click',
