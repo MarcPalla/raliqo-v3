@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f8faf7">
-<title>RALIQO V5</title>
+<title>RALIQO V7 MULTISPORT</title>
 
 <style>
 :root{
@@ -219,6 +219,17 @@ nav{
 
 #calendarTabs{overflow:auto}#calendarTabs button{min-width:58px}.calendarAlt{margin-top:4px}.monthCard{background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden}.monthHead{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px;font-weight:900;text-transform:capitalize}.monthNav{border:0;background:#f1f4ef;border-radius:12px;width:36px;height:36px;font-weight:900}.monthGrid{display:grid;grid-template-columns:repeat(7,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}.monthDow{font-size:10px;color:var(--muted);text-align:center;padding:7px 0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fafbf9}.monthCell{min-height:68px;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff;text-align:left;padding:6px;color:var(--ink)}.monthCell.muted{background:#fafbf9;color:#a4aaa4}.monthCell.today .dayNum{background:var(--g);color:#fff}.dayNum{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:800}.dayDots{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}.dayDot{width:5px;height:5px;border-radius:50%;background:var(--g)}.dayMini{font-size:8px;line-height:1.15;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted)}.yearTitle{font-size:24px;font-weight:900;margin:4px 2px 12px;display:flex;justify-content:space-between;align-items:center}.yearGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.miniMonth{background:#fff;border:1px solid var(--line);border-radius:18px;padding:10px}.miniMonth h4{margin:0 0 8px;text-transform:capitalize;font-size:13px}.miniGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}.miniDay{border:0;background:transparent;font-size:8px;text-align:center;padding:3px 0;border-radius:6px;color:#7d847d}.miniDay.has{background:var(--soft);color:var(--g);font-weight:900}.miniDay.today{background:var(--g);color:#fff}.listDay{margin-bottom:14px}.listDayTitle{font-size:13px;font-weight:900;text-transform:capitalize;margin:0 2px 6px}.matchSectionTitle{font-size:13px;font-weight:900;margin:14px 2px 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}.matchSuggestion{border-left:4px solid var(--g)}@media(max-width:370px){.yearGrid{grid-template-columns:1fr}.monthCell{min-height:58px}.seg button{padding:9px 6px}}
 
+
+.sportbar{margin:10px 0 8px}
+.sportbar .labelrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.sportbar .labelrow strong{font-size:13px}.sportbar .labelrow span{font-size:11px;color:var(--muted)}
+.sportchip{white-space:nowrap}
+.geoRow{display:flex;gap:8px;align-items:center;margin-top:8px}
+.geoStatus{font-size:12px;color:var(--muted);flex:1}
+.profilebox{margin-top:14px;text-align:left}
+.profilebox h3{margin:0 0 8px}.profileSports{display:flex;gap:7px;flex-wrap:wrap}
+.profileSports .chip{margin:0}
+.distanceBadge{font-weight:800}
 </style>
 </head>
 
@@ -235,7 +246,8 @@ nav{
 
       <select id="authRole" class="authfield">
         <option value="player">🎾 Player</option>
-        <option value="coach">👤 Coach</option>
+        <option value="game">🏆 Partido / Sesión / Pachanga</option>
+          <option value="coach">👤 Coach / Entrenador</option>
         <option value="service">💪 Profesional / Servicio</option>
       </select>
 
@@ -257,7 +269,7 @@ nav{
 <header>
   <div class="brand">
     <div class="logo">RAL<span>IQO</span></div>
-    <span class="beta">V5</span>
+    <span class="beta">V7 · MULTISPORT</span>
   </div>
 </header>
 
@@ -325,17 +337,34 @@ nav{
 
   <div class="worldline"><span class="worlddot"></span><span>Desde una hora hasta una gira o stage mensual.</span></div>
 
+  <div class="sportbar">
+    <div class="labelrow"><strong>Deporte</strong><span>RALIQO para todos los deportes</span></div>
+    <div id="sportChips" class="chips">
+      <button class="chip sportchip on" data-sport="all" type="button">🌍 Todos</button>
+      <button class="chip sportchip" data-sport="tennis" type="button">🎾 Tenis</button>
+      <button class="chip sportchip" data-sport="padel" type="button">🏓 Pádel</button>
+      <button class="chip sportchip" data-sport="football" type="button">⚽ Fútbol</button>
+      <button class="chip sportchip" data-sport="basketball" type="button">🏀 Basket</button>
+      <button class="chip sportchip" data-sport="golf" type="button">⛳ Golf</button>
+    </div>
+  </div>
+
   <div class="marketbar">
     <input id="exploreSearch" class="searchbox" placeholder="Buscar ciudad, servicio, gira, marca...">
+    <button id="nearMeBtn" class="filterbtn" type="button">📍 Cerca</button>
     <button id="clearFilters" class="filterbtn" type="button">Limpiar</button>
   </div>
 
   <div id="exploreChips" class="chips">
     <button class="chip on" data-filter="all" type="button">Todo</button>
-    <button class="chip" data-filter="training" type="button">🎾 Entreno</button>
+    <button class="chip" data-filter="training" type="button">🏃 Entrenos</button>
+    <button class="chip" data-filter="game" type="button">🏆 Partidos</button>
+    <button class="chip" data-filter="team" type="button">👥 Equipos</button>
     <button class="chip" data-filter="tour" type="button">✈️ Giras</button>
     <button class="chip" data-filter="stage" type="button">🏕️ Stages</button>
     <button class="chip" data-filter="service" type="button">💪 Servicios</button>
+    <button class="chip" data-filter="court" type="button">🏟️ Instalaciones</button>
+    <button class="chip" data-filter="tournament" type="button">🏆 Eventos</button>
     <button class="chip" data-filter="brand" type="button">🤝 Marcas</button>
     <button class="chip" data-filter="agent" type="button">💼 Agentes</button>
   </div>
@@ -353,9 +382,9 @@ nav{
 
 <section id="me" class="view">
   <div class="profile">
-    <div class="bigavatar">🎾</div>
+    <div class="bigavatar">🌍</div>
     <h2>Mi perfil</h2>
-    <p class="meta">Coach · Grupo privado</p>
+    <p id="profileSummary" class="meta">Perfil deportivo · Multideporte</p>
 
     <div class="stats">
       <div class="card stat">
@@ -367,6 +396,16 @@ nav{
         <strong id="mc">0</strong>
         <div class="meta">Matches</div>
       </div>
+    </div>
+
+    <div class="card profilebox">
+      <h3>Mis deportes</h3>
+      <div id="profileSports" class="profileSports"></div>
+      <div class="field full" style="margin-top:12px">
+        <label>Mi zona</label>
+        <input id="profileLocation" placeholder="Ej. Sant Cugat, Barcelona">
+      </div>
+      <button id="saveProfilePrefs" class="primary" style="margin-top:10px">Guardar preferencias</button>
     </div>
   </div>
 </section>
@@ -392,23 +431,36 @@ nav{
     <div class="formgrid">
 
       <div class="field">
+        <label>Deporte</label>
+        <select id="fSport">
+          <option value="tennis">🎾 Tenis</option>
+          <option value="padel">🏓 Pádel</option>
+          <option value="football">⚽ Fútbol</option>
+          <option value="basketball">🏀 Baloncesto</option>
+          <option value="golf">⛳ Golf</option>
+        </select>
+      </div>
+
+      <div class="field">
         <label>Tipo</label>
         <select id="fType">
-          <option value="training">🎾 Entreno / Clase</option>
-          <option value="coach">👤 Coach</option>
-          <option value="player">⚡ Player / Sparring</option>
+          <option value="training">🏃 Entreno / Clase</option>
+          <option value="game">🏆 Partido / Sesión / Pachanga</option>
+          <option value="coach">👤 Coach / Entrenador</option>
+          <option value="player">⚡ Player / Deportista / Sparring</option>
+          <option value="team">👥 Equipo busca jugador / compañero</option>
           <option value="service">💪 Servicio profesional</option>
           <option value="tour">✈️ Gira</option>
           <option value="stage">🏕️ Stage / Camp</option>
-          <option value="academy">🏟️ Academia / Plaza</option>
-          <option value="court">🎾 Pista</option>
+          <option value="academy">🏟️ Academia / Club / Plaza</option>
+          <option value="court">🏟️ Pista / Campo / Instalación</option>
           <option value="physio">👐 Fisio / Masaje</option>
           <option value="fitness">🏋️ Preparación física</option>
           <option value="psychology">🧠 Psicología</option>
           <option value="nutrition">🥗 Nutrición</option>
           <option value="brand">🤝 Marca / Sponsorship</option>
           <option value="agent">💼 Agente / Management</option>
-          <option value="tournament">🏆 Torneo / Invitación</option>
+          <option value="tournament">🏆 Torneo / Evento / Invitación</option>
           <option value="opportunity">🌍 Otra oportunidad</option>
         </select>
       </div>
@@ -440,6 +492,10 @@ nav{
       <div class="field full">
         <label>Lugar</label>
         <input id="fPlace" value="Barcelona" placeholder="Ciudad, país o lugar">
+      </div>
+      <div class="field full geoRow">
+        <button id="useLocationBtn" class="secondary" type="button" style="margin:0;width:auto;padding:10px 12px">📍 Usar mi ubicación</button>
+        <span id="locationStatus" class="geoStatus">Opcional · permite ordenar por distancia</span>
       </div>
 
       <div class="field full">
@@ -762,6 +818,7 @@ const $=id=>document.getElementById(id);
 const KPOST='raliqo_v3_posts';
 const KMATCH='raliqo_v3_matches';
 const KUSER='raliqo_user_id';
+const KPREF='raliqo_v7_profile_prefs';
 
 function safeGet(k,f=''){
   try{
@@ -786,6 +843,10 @@ let selectedDate=new Date();
 let calendarMode='week';
 let posts=[];
 let matches=[];
+let sportFilter='all';
+let nearMe=false;
+let userCoords=null;
+let draftCoords=null;
 
 try{
   posts=JSON.parse(safeGet(KPOST,'[]'))||[];
@@ -871,6 +932,7 @@ function normalizePost(p){
   return{
     id:p.id||'p'+Date.now(),
     user_id:p.user_id||null,
+    sport:p.sport||'tennis',
     type:p.type||'training',
     title:p.title||'Disponibilidad',
     place:p.place||'Barcelona',
@@ -883,8 +945,34 @@ function normalizePost(p){
     flow:p.flow||'request',
     status:p.status||'open',
     owner:(p.user_id===ME()||p.owner==='me')?'me':'other',
-    notes:p.notes||''
+    notes:p.notes||'',
+    latitude:p.latitude==null?null:Number(p.latitude),
+    longitude:p.longitude==null?null:Number(p.longitude)
   };
+}
+
+function normalizeMatch(m){
+  const p=posts.find(x=>String(x.id)===String(m.post_id));
+  return{
+    id:m.id||'m'+Date.now(),
+    post_id:m.post_id,
+    requester_id:m.requester_id||null,
+    owner_id:m.owner_id||null,
+    status:m.status||'pending',
+    title:(p&&p.title)||m.title||'Match',
+    place:(p&&p.place)||m.place||'',
+    amount:Number((p&&p.price)??m.amount??0),
+    currency:(p&&p.currency)||m.currency||'EUR',
+    flow:(p&&p.flow)||m.flow||'request',
+    flowLabel:flowLabel((p&&p.flow)||m.flow||'request')
+  };
+}
+
+function matchStatusLabel(status){
+  const s=String(status||'pending').toLowerCase();
+  if(s==='accepted') return 'Aceptado';
+  if(s==='rejected') return 'Rechazado';
+  return 'Pendiente';
 }
 
 function renderWeek(){
@@ -1036,10 +1124,24 @@ let exploreFilter='all';
 let exploreQuery='';
 const RALIQO_FEE_RATE=0.10;
 
+function sportIcon(sport){
+  return ({tennis:'🎾',padel:'🏓',football:'⚽',basketball:'🏀',golf:'⛳'}[sport]||'🏅');
+}
+function sportLabel(sport){
+  return ({tennis:'Tenis',padel:'Pádel',football:'Fútbol',basketball:'Basket',golf:'Golf'}[sport]||'Deporte');
+}
+function distanceKm(a,b,c,d){
+  if([a,b,c,d].some(v=>v==null||Number.isNaN(Number(v)))) return null;
+  const R=6371,rad=x=>Number(x)*Math.PI/180;
+  const dLat=rad(c-a),dLon=rad(d-b);
+  const q=Math.sin(dLat/2)**2+Math.cos(rad(a))*Math.cos(rad(c))*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q));
+}
+
 function typeIcon(type){
   return ({
-    training:'🎾', coach:'👤', player:'⚡', service:'💪', tour:'✈️',
-    stage:'🏕️', academy:'🏟️', court:'🎾', physio:'👐', fitness:'🏋️',
+    training:'🏃', game:'🏆', coach:'👤', player:'⚡', team:'👥', service:'💪', tour:'✈️',
+    stage:'🏕️', academy:'🏟️', court:'🏟️', physio:'👐', fitness:'🏋️',
     psychology:'🧠', nutrition:'🥗', brand:'🤝', agent:'💼',
     tournament:'🏆', opportunity:'🌍'
   }[type]||'🌍');
@@ -1047,11 +1149,11 @@ function typeIcon(type){
 
 function typeLabel(type){
   return ({
-    training:'Entreno / Clase', coach:'Coach', player:'Player / Sparring',
+    training:'Entreno / Clase', game:'Partido / Sesión', coach:'Coach / Entrenador', player:'Player / Deportista', team:'Equipo / Compañero',
     service:'Servicio', tour:'Gira', stage:'Stage / Camp', academy:'Academia',
-    court:'Pista', physio:'Fisio / Masaje', fitness:'Preparación física',
+    court:'Pista / Campo / Instalación', physio:'Fisio / Masaje', fitness:'Preparación física',
     psychology:'Psicología', nutrition:'Nutrición', brand:'Marca / Sponsorship',
-    agent:'Agente / Management', tournament:'Torneo / Invitación',
+    agent:'Agente / Management', tournament:'Torneo / Evento / Invitación',
     opportunity:'Oportunidad'
   }[type]||'Oportunidad');
 }
@@ -1081,16 +1183,24 @@ function renderExplore(){
   const list=$('exploreList');
   if(!list) return;
 
-  const filtered=posts.filter(p=>{
+  let filtered=posts.filter(p=>{
     if(!p) return false;
+    const sportOk=sportFilter==='all'||(p.sport||'tennis')===sportFilter;
     const typeOk=
       exploreFilter==='all' ||
       p.type===exploreFilter ||
-      (exploreFilter==='service' && ['service','physio','fitness','psychology','nutrition','court'].includes(p.type));
-    const hay=[p.title,p.place,p.notes,typeLabel(p.type)].join(' ').toLowerCase();
+      (exploreFilter==='service' && ['service','physio','fitness','psychology','nutrition'].includes(p.type));
+    const hay=[p.title,p.place,p.notes,typeLabel(p.type),sportLabel(p.sport)].join(' ').toLowerCase();
     const queryOk=!exploreQuery || hay.includes(exploreQuery.toLowerCase());
-    return typeOk&&queryOk;
+    return sportOk&&typeOk&&queryOk;
   });
+  if(nearMe&&userCoords){
+    filtered=filtered.slice().sort((a,b)=>{
+      const da=distanceKm(userCoords.lat,userCoords.lng,a.latitude,a.longitude);
+      const db=distanceKm(userCoords.lat,userCoords.lng,b.latitude,b.longitude);
+      return (da==null?1e9:da)-(db==null?1e9:db);
+    });
+  }
 
   list.innerHTML=filtered.length
   ? filtered.map(p=>{
@@ -1099,13 +1209,15 @@ function renderExplore(){
       return `
       <div class="card">
         <div class="cardtop">
-          <div class="avatar">${typeIcon(p.type)}</div>
+          <div class="avatar">${sportIcon(p.sport)}</div>
           <div style="min-width:0;flex:1">
             <h3>${esc(p.title)}</h3>
             <div class="meta">${esc(p.place)} · ${esc(p.date)} ${esc(p.start)}</div>
             <div class="spotmeta">
+              <span class="badge">${sportIcon(p.sport)} ${esc(sportLabel(p.sport))}</span>
               <span class="badge">${esc(typeLabel(p.type))}</span>
               <span class="badge">${esc(formatDuration(p.duration))}</span>
+              ${nearMe&&userCoords&&distanceKm(userCoords.lat,userCoords.lng,p.latitude,p.longitude)!=null?`<span class="badge distanceBadge">📍 ${distanceKm(userCoords.lat,userCoords.lng,p.latitude,p.longitude).toFixed(1)} km</span>`:''}
               <span class="badge global">🌍 ${esc(p.spots||1)} plaza(s)</span>
               ${p.price?`<span class="badge money">${esc(p.price)} ${esc(symbol)}</span>`:''}
             </div>
@@ -1138,12 +1250,36 @@ function renderExplore(){
 
 function renderMatches(){
   const host=$('matchList'); if(!host) return;
-  const confirmed=matches.map(m=>`<div class="card"><div class="cardtop"><div class="avatar">🤝</div><div><h3>${esc(m.title)}</h3><div class="meta">${esc(m.place||'')} ${m.amount?`· ${esc(m.amount)} ${esc(m.currency||'EUR')}`:''}</div></div></div><div class="spotmeta"><span class="tag green">${esc(m.status||'Pendiente')}</span><span class="badge">${esc(m.flowLabel||'Solicitud')}</span></div></div>`).join('');
-  const suggestions=posts.filter(p=>p&&p.owner!=='me'&&p.status==='open').slice(0,8).map(p=>`<div class="card matchSuggestion"><div class="cardtop"><div class="avatar">${typeIcon(p.type)}</div><div style="min-width:0"><h3>${esc(p.title)}</h3><div class="meta">${esc(p.place)} · ${esc(p.date)} ${esc(p.start)}</div></div></div><div class="spotmeta"><span class="badge">${esc(typeLabel(p.type))}</span><span class="badge global">${esc(formatDuration(p.duration))}</span></div><div class="cardactions"><button class="btn light detailbtn" data-id="${esc(p.id)}">Ver</button><button class="btn mbtn" data-id="${esc(p.id)}">${p.flow==='instant'?'RESERVAR':p.flow==='contact'?'CONECTAR':'MATCH'}</button></div></div>`).join('');
-  host.innerHTML=(confirmed?`<div class="matchSectionTitle">Tus matches</div>${confirmed}`:'')+(suggestions?`<div class="matchSectionTitle">Matches posibles</div>${suggestions}`:'')||'<div class="emptyState">Aún no hay matches posibles.<br>Cuando aparezcan Spots compatibles los verás aquí.</div>';
+
+  const outgoing=matches.filter(m=>String(m.requester_id)===String(ME()));
+  const incoming=matches.filter(m=>String(m.owner_id)===String(ME())&&String(m.requester_id)!==String(ME()));
+
+  const incomingHtml=incoming.map(m=>{
+    const p=posts.find(x=>String(x.id)===String(m.post_id));
+    const status=String(m.status||'pending').toLowerCase();
+    return `<div class="card"><div class="cardtop"><div class="avatar">📥</div><div style="min-width:0"><h3>${esc((p&&p.title)||m.title||'Solicitud de match')}</h3><div class="meta">${esc((p&&p.place)||m.place||'')} ${(p&&p.date)?`· ${esc(p.date)} ${esc(p.start)}`:''}</div></div></div><div class="spotmeta"><span class="tag green">${esc(matchStatusLabel(status))}</span><span class="badge">${p?sportIcon(p.sport)+' '+esc(sportLabel(p.sport)):'Deporte'}</span><span class="badge">Solicitud recibida</span></div>${status==='pending'?`<div class="cardactions"><button class="btn light matchStatusBtn" data-id="${esc(m.id)}" data-status="rejected">Rechazar</button><button class="btn matchStatusBtn" data-id="${esc(m.id)}" data-status="accepted">Aceptar</button></div>`:''}</div>`;
+  }).join('');
+
+  const outgoingHtml=outgoing.map(m=>{
+    const p=posts.find(x=>String(x.id)===String(m.post_id));
+    return `<div class="card"><div class="cardtop"><div class="avatar">🤝</div><div style="min-width:0"><h3>${esc((p&&p.title)||m.title||'Match')}</h3><div class="meta">${esc((p&&p.place)||m.place||'')} ${((p&&p.price)||m.amount)?`· ${esc((p&&p.price)||m.amount)} ${esc((p&&p.currency)||m.currency||'EUR')}`:''}</div></div></div><div class="spotmeta"><span class="tag green">${esc(matchStatusLabel(m.status))}</span><span class="badge">${p?sportIcon(p.sport)+' '+esc(sportLabel(p.sport)):'Deporte'}</span><span class="badge">${esc((p&&flowLabel(p.flow))||m.flowLabel||'Solicitud')}</span></div></div>`;
+  }).join('');
+
+  const requestedPosts=new Set(outgoing.map(m=>String(m.post_id)));
+  const prefSports=new Set((loadProfilePrefs().sports||['tennis']));
+  const suggestions=posts.filter(p=>p&&p.owner!=='me'&&p.status==='open'&&!requestedPosts.has(String(p.id))).sort((a,b)=>Number(prefSports.has(b.sport||'tennis'))-Number(prefSports.has(a.sport||'tennis'))).slice(0,8).map(p=>`<div class="card matchSuggestion"><div class="cardtop"><div class="avatar">${sportIcon(p.sport)}</div><div style="min-width:0"><h3>${esc(p.title)}</h3><div class="meta">${esc(p.place)} · ${esc(p.date)} ${esc(p.start)}</div></div></div><div class="spotmeta"><span class="badge">${sportIcon(p.sport)} ${esc(sportLabel(p.sport))}</span><span class="badge">${esc(typeLabel(p.type))}</span><span class="badge global">${esc(formatDuration(p.duration))}</span></div><div class="cardactions"><button class="btn light detailbtn" data-id="${esc(p.id)}">Ver</button><button class="btn mbtn" data-id="${esc(p.id)}">${p.flow==='instant'?'RESERVAR':p.flow==='contact'?'CONECTAR':'MATCH'}</button></div></div>`).join('');
+
+  host.innerHTML=
+    (incomingHtml?`<div class="matchSectionTitle">Solicitudes recibidas</div>${incomingHtml}`:'')+
+    (outgoingHtml?`<div class="matchSectionTitle">Tus solicitudes</div>${outgoingHtml}`:'')+
+    (suggestions?`<div class="matchSectionTitle">Matches posibles</div>${suggestions}`:'')||
+    '<div class="emptyState">Aún no hay matches posibles.<br>Cuando aparezcan Spots compatibles los verás aquí.</div>';
+
   host.querySelectorAll('.mbtn').forEach(b=>b.addEventListener('click',()=>doMatch(b.dataset.id)));
   host.querySelectorAll('.detailbtn').forEach(b=>b.addEventListener('click',()=>openEvent(b.dataset.id)));
-  $('pc').textContent=posts.filter(p=>p.owner==='me').length;$('mc').textContent=matches.length;
+  host.querySelectorAll('.matchStatusBtn').forEach(b=>b.addEventListener('click',()=>updateMatchStatus(b.dataset.id,b.dataset.status)));
+  $('pc').textContent=posts.filter(p=>p.owner==='me').length;
+  $('mc').textContent=matches.length;
 }
 
 function smartMatch(){
@@ -1166,7 +1302,8 @@ function smartMatch(){
       const b1=mins(b.start);
       const b2=b1+Number(b.duration||60);
 
-      if(Math.max(a1,b1)<Math.min(a2,b2)){
+      const sameSport=(a.sport||'tennis')===(b.sport||'tennis');
+      if(sameSport&&Math.max(a1,b1)<Math.min(a2,b2)){
         candidate={a,b};
         break;
       }
@@ -1178,7 +1315,7 @@ function smartMatch(){
   if(candidate){
     $('smartMatch').style.display='flex';
     $('smartText').textContent=
-      `${candidate.a.title} coincide con ${candidate.b.title}`;
+      `${sportIcon(candidate.a.sport)} ${sportLabel(candidate.a.sport)} · ${candidate.a.title} coincide con ${candidate.b.title}`;
 
     $('smartBtn').onclick=()=>show('explore');
   }else{
@@ -1213,6 +1350,7 @@ async function publish(){
   const rec={
     id:'p'+Date.now(),
     user_id:CURRENT_USER_ID,
+    sport:$('fSport')?$('fSport').value:'tennis',
     type:$('fType').value,
     title:$('fTitle').value.trim()||'Disponibilidad',
     place:$('fPlace').value.trim()||'Barcelona',
@@ -1225,46 +1363,29 @@ async function publish(){
     flow:$('fFlow')?$('fFlow').value:'request',
     status:'open',
     owner:'me',
-    notes:$('fNotes').value.trim()
+    notes:$('fNotes').value.trim(),
+    latitude:draftCoords?draftCoords.lat:null,
+    longitude:draftCoords?draftCoords.lng:null
   };
 
   try{
-    const r=await supabaseRequest(
-      'posts',
-      {
-        method:'POST',
-        headers:{
-          Prefer:'return=representation'
-        },
-        body:JSON.stringify({
-          user_id:CURRENT_USER_ID,
-          type:rec.type,
-          title:rec.title,
-          place:rec.place,
-          date:rec.date,
-          start_time:rec.start,
-          duration_min:rec.duration,
-          price:rec.price,
-          spots:rec.spots,
-          status:rec.status,
-          notes:rec.notes
-        })
-      }
-    );
-
+    const chosenSport=rec.sport, chosenCurrency=rec.currency, chosenFlow=rec.flow, chosenLat=rec.latitude, chosenLng=rec.longitude;
+    const baseBody={
+      user_id:CURRENT_USER_ID, type:rec.type, title:rec.title, place:rec.place,
+      date:rec.date, start_time:rec.start, duration_min:rec.duration, price:rec.price,
+      spots:rec.spots, status:rec.status, notes:rec.notes
+    };
+    const v7Body={...baseBody,sport:rec.sport,currency:rec.currency,flow:rec.flow,latitude:rec.latitude,longitude:rec.longitude};
+    let r=await supabaseRequest('posts',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(v7Body)});
     if(!r.ok){
-      const err=await r.text();
-
-      alert(
-        'No se pudo guardar en Supabase ('+
-        r.status+
-        '). '+
-        err
-      );
-
-      return;
+      const firstErr=await r.text();
+      if(r.status===400 && /column|schema|sport|currency|flow|latitude|longitude/i.test(firstErr)){
+        r=await supabaseRequest('posts',{method:'POST',headers:{Prefer:'return=representation'},body:JSON.stringify(baseBody)});
+      }else{
+        alert('No se pudo guardar en Supabase ('+r.status+'). '+firstErr); return;
+      }
     }
-
+    if(!r.ok){ const err=await r.text(); alert('No se pudo guardar en Supabase ('+r.status+'). '+err); return; }
     const saved=await r.json();
 
     if(Array.isArray(saved)&&saved[0]){
@@ -1273,6 +1394,11 @@ async function publish(){
         normalizePost(saved[0]),
         {owner:'me'}
       );
+      if(!saved[0].sport) rec.sport=chosenSport;
+      if(!saved[0].currency) rec.currency=chosenCurrency;
+      if(!saved[0].flow) rec.flow=chosenFlow;
+      if(saved[0].latitude==null) rec.latitude=chosenLat;
+      if(saved[0].longitude==null) rec.longitude=chosenLng;
     }
 
   }catch(e){
@@ -1288,6 +1414,8 @@ async function publish(){
   );
 
   closeCreate();
+  draftCoords=null;
+  if($('locationStatus')) $('locationStatus').textContent='Opcional · permite ordenar por distancia';
 
   selectedDate=new Date(rec.date+'T12:00:00');
 
@@ -1304,7 +1432,8 @@ function openEvent(id){
   const total=(Number(p.price)||0)+fee;
 
   alert(
-`${typeIcon(p.type)} ${p.title}
+`${sportIcon(p.sport)} ${sportLabel(p.sport)} · ${typeLabel(p.type)}
+${p.title}
 ${p.place}
 ${p.date} · ${p.start}
 ${formatDuration(p.duration)}
@@ -1316,50 +1445,91 @@ ${p.price ? `\nRALIQO ${Math.round(RALIQO_FEE_RATE*100)}%: ${fee.toFixed(2)} ${s
   );
 }
 
-function doMatch(id){
+async function doMatch(id){
   const p=posts.find(x=>String(x.id)===String(id));
   if(!p) return;
+  if(!CURRENT_USER_ID){
+    alert('Debes iniciar sesión.');
+    return;
+  }
   if(p.owner==='me'){
     alert('Este Spot es tuyo.');
     return;
   }
+  if(!p.user_id){
+    alert('Este Spot no tiene propietario válido en Supabase.');
+    return;
+  }
 
-  const already=matches.some(m=>String(m.post_id)===String(p.id));
+  const already=matches.some(m=>String(m.post_id)===String(p.id)&&String(m.requester_id)===String(CURRENT_USER_ID));
   if(already){
     alert('Ya tienes una solicitud para este Spot.');
     show('matches');
     return;
   }
 
-  const fee=(Number(p.price)||0)*RALIQO_FEE_RATE;
-  const action=p.flow==='contact'?'Contacto enviado':p.flow==='instant'?'Reserva pendiente de pago':'Solicitud enviada';
+  const action=p.flow==='contact'?'Contacto enviado':p.flow==='instant'?'Reserva solicitada':'Solicitud enviada';
 
-  matches.unshift({
-    id:'m'+Date.now(),
-    post_id:p.id,
-    title:p.title,
-    place:p.place,
-    amount:Number(p.price)||0,
-    currency:p.currency||'EUR',
-    raliqo_fee:fee,
-    status:action,
-    flow:p.flow||'request',
-    flowLabel:flowLabel(p.flow)
-  });
+  try{
+    const r=await supabaseRequest('matches',{
+      method:'POST',
+      headers:{Prefer:'return=representation'},
+      body:JSON.stringify({
+        post_id:p.id,
+        requester_id:CURRENT_USER_ID,
+        owner_id:p.user_id,
+        status:'pending'
+      })
+    });
 
-  safeSet(KMATCH,JSON.stringify(matches));
-  renderAll();
-  show('matches');
+    if(!r.ok){
+      const err=await r.text();
+      alert('No se pudo guardar el Match en Supabase ('+r.status+'). '+err);
+      return;
+    }
 
-  if(p.price){
-    const sym=currencySymbol(p.currency||'EUR');
-    alert(`${action}.
-Precio: ${p.price} ${sym}
-Comisión RALIQO (10%): ${fee.toFixed(2)} ${sym}
+    const saved=await r.json();
+    const row=Array.isArray(saved)&&saved[0]?saved[0]:{
+      id:'m'+Date.now(),
+      post_id:p.id,
+      requester_id:CURRENT_USER_ID,
+      owner_id:p.user_id,
+      status:'pending'
+    };
 
-El cobro real se activará al conectar Stripe.`);
-  }else{
-    alert(action+'.');
+    matches.unshift(normalizeMatch(row));
+    safeSet(KMATCH,JSON.stringify(matches));
+    renderAll();
+    show('matches');
+    alert(action+'. Ya está guardado en Supabase.');
+  }catch(e){
+    alert('No se pudo conectar con Supabase para crear el Match.');
+  }
+}
+
+async function updateMatchStatus(id,status){
+  if(!id||!['accepted','rejected'].includes(status)) return;
+
+  try{
+    const r=await supabaseRequest('matches?id=eq.'+encodeURIComponent(id),{
+      method:'PATCH',
+      headers:{Prefer:'return=representation'},
+      body:JSON.stringify({status})
+    });
+
+    if(!r.ok){
+      const err=await r.text();
+      alert('No se pudo actualizar el Match ('+r.status+'). '+err);
+      return;
+    }
+
+    const m=matches.find(x=>String(x.id)===String(id));
+    if(m) m.status=status;
+    safeSet(KMATCH,JSON.stringify(matches));
+    renderAll();
+    show('matches');
+  }catch(e){
+    alert('No se pudo conectar con Supabase para actualizar el Match.');
   }
 }
 
@@ -1402,6 +1572,48 @@ async function loadPostsFromSupabase(){
     }
 
   }catch(e){}
+}
+
+async function loadMatchesFromSupabase(){
+  if(!CURRENT_USER_ID) return;
+
+  try{
+    const filter='or=(requester_id.eq.'+CURRENT_USER_ID+',owner_id.eq.'+CURRENT_USER_ID+')';
+    const r=await supabaseRequest('matches?select=*&'+filter);
+
+    if(!r.ok) return;
+
+    const data=await r.json();
+
+    if(Array.isArray(data)){
+      matches=data.map(normalizeMatch);
+      safeSet(KMATCH,JSON.stringify(matches));
+      renderAll();
+    }
+  }catch(e){}
+}
+
+function loadProfilePrefs(){
+  try{return JSON.parse(safeGet(KPREF,'{}'))||{}}catch(e){return {}}
+}
+function initProfilePrefs(){
+  const host=$('profileSports'); if(!host) return;
+  const sports=['tennis','padel','football','basketball','golf'];
+  const prefs=loadProfilePrefs(); const selected=new Set(prefs.sports||['tennis']);
+  host.innerHTML=sports.map(sp=>`<button type="button" class="chip ${selected.has(sp)?'on':''}" data-profile-sport="${sp}">${sportIcon(sp)} ${sportLabel(sp)}</button>`).join('');
+  host.querySelectorAll('[data-profile-sport]').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
+  if($('profileLocation')) $('profileLocation').value=prefs.location||'';
+  updateProfileSummary();
+  if($('saveProfilePrefs')) $('saveProfilePrefs').onclick=()=>{
+    const chosen=[...host.querySelectorAll('[data-profile-sport].on')].map(b=>b.dataset.profileSport);
+    const data={sports:chosen.length?chosen:['tennis'],location:$('profileLocation')?$('profileLocation').value.trim():''};
+    safeSet(KPREF,JSON.stringify(data)); updateProfileSummary(); alert('Preferencias deportivas guardadas.');
+  };
+}
+function updateProfileSummary(){
+  const prefs=loadProfilePrefs(), el=$('profileSummary'); if(!el) return;
+  const names=(prefs.sports||['tennis']).slice(0,3).map(sportLabel).join(' · ');
+  el.textContent=(names||'Multideporte')+(prefs.location?' · '+prefs.location:'');
 }
 
 function init(){
@@ -1459,12 +1671,45 @@ function init(){
   if(clear){
     clear.addEventListener('click',()=>{
       exploreFilter='all';
+      sportFilter='all';
+      nearMe=false;
       exploreQuery='';
       if(search) search.value='';
       document.querySelectorAll('#exploreChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.filter==='all'));
+      document.querySelectorAll('#sportChips .sportchip').forEach(c=>c.classList.toggle('on',c.dataset.sport==='all'));
+      if($('nearMeBtn')) $('nearMeBtn').classList.remove('on');
       renderExplore();
     });
   }
+
+  document.querySelectorAll('#sportChips .sportchip').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      sportFilter=chip.dataset.sport||'all';
+      document.querySelectorAll('#sportChips .sportchip').forEach(c=>c.classList.toggle('on',c===chip));
+      renderExplore();
+    });
+  });
+
+  const near=$('nearMeBtn');
+  if(near) near.addEventListener('click',()=>{
+    if(nearMe){ nearMe=false; near.classList.remove('on'); renderExplore(); return; }
+    if(!navigator.geolocation){ alert('Tu navegador no permite ubicación.'); return; }
+    navigator.geolocation.getCurrentPosition(pos=>{
+      userCoords={lat:pos.coords.latitude,lng:pos.coords.longitude}; nearMe=true; near.classList.add('on'); renderExplore();
+    },()=>alert('No se pudo acceder a tu ubicación.'));
+  });
+
+  const useLoc=$('useLocationBtn');
+  if(useLoc) useLoc.addEventListener('click',()=>{
+    if(!navigator.geolocation){ alert('Tu navegador no permite ubicación.'); return; }
+    $('locationStatus').textContent='Buscando ubicación…';
+    navigator.geolocation.getCurrentPosition(pos=>{
+      draftCoords={lat:pos.coords.latitude,lng:pos.coords.longitude};
+      $('locationStatus').textContent='✓ Ubicación añadida al Spot';
+    },()=>{$('locationStatus').textContent='No se pudo obtener la ubicación';});
+  });
+
+  initProfilePrefs();
 
   $('createSheet').addEventListener(
     'click',
@@ -1475,7 +1720,7 @@ function init(){
     }
   );
 
-  loadPostsFromSupabase();
+  loadPostsFromSupabase().then(loadMatchesFromSupabase);
 }
 
 async function startRALIQO(){
