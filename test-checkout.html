@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RALIQO Stripe Test</title>
+</head>
+<body>
+  <h1>Prueba de pago RALIQO</h1>
+
+  <label>Price ID</label><br />
+  <input id="priceId" placeholder="price_..." style="width: 90%; padding: 10px;"><br><br>
+
+  <label>Connected Account ID</label><br />
+  <input id="accountId" placeholder="acct_..." style="width: 90%; padding: 10px;"><br><br>
+
+  <button id="payBtn" style="padding: 12px 20px;">
+    Pagar prueba
+  </button>
+
+  <p id="status"></p>
+
+  <script>
+    document.getElementById("payBtn").addEventListener("click", async () => {
+      const priceId = document.getElementById("priceId").value.trim();
+      const accountId = document.getElementById("accountId").value.trim();
+      const status = document.getElementById("status");
+
+      status.textContent = "Creando pago...";
+
+      try {
+        const response = await fetch("/api/create-checkout-session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            priceId,
+            accountId
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          status.textContent = data.error || "Error creando el pago";
+          return;
+        }
+
+        window.location.href = data.url;
+      } catch (error) {
+        status.textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html>
