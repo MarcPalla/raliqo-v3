@@ -47,7 +47,8 @@
           return;
         }
 
-        window.location.href = data.url;
+        status.textContent = "Checkout creado: " + data.url;
+console.log(data);
       } catch (error) {
         status.textContent = error.message;
       }
